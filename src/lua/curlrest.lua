@@ -15,6 +15,16 @@ local function protect_shell_args(curl_args)
     return protected_args
 end
 
+local function char_to_percent(c)
+    return string.format("%%%02X", string.byte(c))
+end
+
+function curlrest.percent_encode(value)
+    value = value:gsub("([^%w ])", char_to_percent)
+    value = value:gsub(" ", "+")
+    return value
+end
+
 function curlrest.call(args)
     local curl_args = {}
     if args.basic_auth then
@@ -66,7 +76,7 @@ function curlrest.call(args)
             if args.log_func then
                 args.log_func("[" .. response.body .. "]")
             end
-                break
+            break
         else
             -- Split the line into key and value (e.g., "Content-Type: application/json")
             local key, value = line:match("([^:]+):%s*(.+)")

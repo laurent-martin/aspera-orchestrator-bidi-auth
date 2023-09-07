@@ -14,6 +14,7 @@ function forward_to_orchestrator(config)
     end
     --- send request to orchestrator with JSON payload (tags is a JSON in string)
     local call_path = "external_calls/validate/" .. config.orchestrator.workflow
+    -- TODO: percent encode with curlrest.percent_encode values
     -- .. "?login=" .. config.orchestrator.user .. "&password=" .. config.orchestrator.pass
     local response = curlrest.call {
         base_url = config.orchestrator.url,
