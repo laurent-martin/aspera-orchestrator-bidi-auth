@@ -10,23 +10,21 @@ local message = forward_orchestrator(config)
 if message then
     lua_session_abort(message)
 else
-    lua_log("Validation: pass")
     local response = curlrest.call {
+        base_url = config.node.url,
+        subpath = "ops/transfers/" .. env_table["xfer_id"],
         basic_auth = {
-            username = config.node_user,
-            password = config.node_pass
+            username = config.node.user,
+            password = config.node.pass
         },
-        base_url = config.node_url,
-        subpath = "ops/transfers/"..env_table["xfer_id"],
         headers = {
             ["Content-Type"] = "application/json",
             ["Accept"] = "application/json"
         },
         method = "PUT",
         data = json.encode({
-            target_rate_kbps = 100000,
+            target_rate_kbps = config.target_rate_kbps,
         }),
-        debug = true,
+        log_func = config.debug and lua_log or nil,
     }
-    rest_dump(lua_log, response)
 end

@@ -32,6 +32,8 @@ $(DIR_GEN)config_orchestrator.lua: $(DIR_GEN).exists
 	envsubst < $(DIR_LUA_SRC)config_orchestrator.tmpl.lua > $(DIR_GEN)config_orchestrator.lua
 testshares:
 	ascli shares repo down /london-demo-restricted/aspera-test-dir-small/10MB.18 --transfer-info=@json:'{"wss":false}'
+zip_lua:
+	zip -j -r lua.zip $(SRC_LUA_SCRIPTS)
 # deploy on test environment
 deploy: $(SRC_LUA_SCRIPTS)
 	ssh $(hsts_addr) sudo bash -c "'mkdir -p $(HSTS_LUADIR);chmod a+w $(HSTS_LUADIR)'"

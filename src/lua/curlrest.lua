@@ -37,8 +37,8 @@ function curlrest.call(args)
         end
     end
     local command = "curl -isS " .. table.concat(protect_shell_args(curl_args), " ")
-    if args.debug then
-        print("[" .. command .. "]")
+    if args.log_func then
+        args.log_func("[" .. command .. "]")
     end
     local handle = assert(io.popen(command))
     local response = {
@@ -50,7 +50,9 @@ function curlrest.call(args)
     -- Read the output line by line and process each line
     for line in handle:lines() do
         line = line:gsub("\r", "")
-        print("[" .. line .. "]")
+        if args.log_func then
+            args.log_func("[" .. line .. "]")
+        end
         -- Check if the line is the status line (e.g., "HTTP/1.1 200 OK")
         if not response.status_code then
             --- "^HTTP/%d.%d%s%d+%s"
@@ -61,7 +63,10 @@ function curlrest.call(args)
         elseif line == "" then
             -- Read the rest of the output as the body and we are done
             response.body = handle:read("*a")
-            break
+            if args.log_func then
+                args.log_func("[" .. response.body .. "]")
+            end
+                break
         else
             -- Split the line into key and value (e.g., "Content-Type: application/json")
             local key, value = line:match("([^:]+):%s*(.+)")
@@ -73,16 +78,18 @@ function curlrest.call(args)
 
     handle:close()
 
+    -- TODO: decode JSON body if Content-Type is application/json
+
     return response
 end
 
-function rest_dump(myprint, response)
-    myprint("Status Code:", response.status_code)
-    myprint("Headers:")
+function rest_dump(log_func, response)
+    log_func("Status Code:", response.status_code)
+    log_func("Headers:")
     for key, value in pairs(response.headers) do
-        myprint(key, ":", value)
+        log_func(key, ":", value)
     end
-    myprint("Body:", response.body)
+    log_func("Body:", response.body)
 end
 
 return curlrest

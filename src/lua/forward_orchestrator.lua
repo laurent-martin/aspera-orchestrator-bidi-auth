@@ -13,14 +13,16 @@ function forward_to_orchestrator(config)
         end
     end
     --- send request to orchestrator with JSON payload (tags is a JSON in string)
+    local call_path = "external_calls/validate/" .. config.orchestrator.workflow
+    -- .. "?login=" .. config.orchestrator.user .. "&password=" .. config.orchestrator.pass
     local response = curlrest.call {
-        base_url = config.base_url,
-        subpath = "external_calls/validate/" .. config.workflow .. "?login=" .. config.username .. "&password=" .. config.password,
+        base_url = config.orchestrator.url,
+        subpath = call_path,
         headers = {
             ["Content-Type"] = "application/json",
             ["Accept"] = "application/json"
         },
-        debug = true,
+        log_func = config.debug and lua_log or nil,
         data = json.encode(env_table)
     }
     if response.status_code == 200 then
@@ -29,10 +31,16 @@ function forward_to_orchestrator(config)
         end
         return nil
     end
-    local error_message = "Cannot decode reason"
+    local error_message = "Cannot decode reason (no JSON payload)"
     if response.body and string.sub(response.body, 1, 1) == '{' then
         local data = json.decode(response.body)
-        error_message = data.error.message
+        if type(data.error) == "string" then
+            error_message = data.error
+        elseif type(data.error) == "table" and type(data.error.message) == "string" then
+            error_message = data.error.message
+        else
+            error_message = response.body
+        end
     end
     if config.debug then
         lua_log("Validation: KO: " .. error_message)

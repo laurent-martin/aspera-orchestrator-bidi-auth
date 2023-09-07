@@ -1,10 +1,15 @@
 return {
-    base_url = "$orch_url",
-    username = "$orch_user",
-    password = "$orch_pass",
-    workflow = $orch_workflow,
     debug = true,
-    node_url = "$node_url",
-    node_user = "$node_user",
-    node_pass = "$node_pass",
+    target_rate_kbps = 100000,
+    orchestrator = {
+        url = "$orch_url",
+        user = "$orch_user",
+        pass = "$orch_pass",
+        workflow = "$orch_workflow",
+    },
+    node = {
+        url = "$node_url",
+        user = "$node_user",
+        pass = "$node_pass",
+    },
 }
