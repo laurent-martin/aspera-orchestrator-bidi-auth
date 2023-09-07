@@ -48,3 +48,9 @@ terminate
 EOF
 asnodeadmin --reload
 ```
+
+### Update scripts
+
+```bash
+for f in curlrest forward_orchestrator validate_orchestrator;do curl https://raw.githubusercontent.com/laurent-martin/aspera-orchestrator-bidi-auth/main/src/lua/$f.lua -o $f.lua;done
+```
