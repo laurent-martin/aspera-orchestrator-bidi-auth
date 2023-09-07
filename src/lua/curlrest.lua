@@ -49,7 +49,7 @@ function curlrest.call(args)
     -- no 100-Continue
     table.insert(curl_args, "-H")
     table.insert(curl_args, "Expect:")
-    local command = "curl -isS " .. table.concat(protect_shell_args(curl_args), " ")
+    local command = "curl -kisS " .. table.concat(protect_shell_args(curl_args), " ")
     if args.log_func then
         args.log_func("[" .. command .. "]")
     end
