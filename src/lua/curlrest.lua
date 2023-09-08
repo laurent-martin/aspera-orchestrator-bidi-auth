@@ -53,6 +53,7 @@ function curlrest.call(args)
     if args.log_func then
         args.log_func("[" .. command .. "]")
     end
+    -- TODO get stderr and log it
     local handle = assert(io.popen(command))
     local response = {
         status_code = nil,
@@ -89,7 +90,10 @@ function curlrest.call(args)
         end
     end
 
-    handle:close()
+    local rc = handle:close()
+    if args.log_func then
+        args.log_func("return code: " .. tostring(rc))
+    end
 
     -- TODO: decode JSON body if Content-Type is application/json
 
