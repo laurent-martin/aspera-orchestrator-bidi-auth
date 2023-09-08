@@ -5,12 +5,8 @@ local json = require "json"
 local curlrest = require "curlrest"
 --- load fwd application
 local forward_orchestrator = require "forward_orchestrator"
---- validate session, returns nil if validation is OK, error message otherwise
-local message = forward_orchestrator(config)
-if message then
-    lua_session_abort(message)
-else
-    local response = curlrest.call {
+local function update_transfer(tspec)
+    return curlrest.call {
         base_url = config.node.url,
         subpath = "ops/transfers/" .. env_table["xfer_id"],
         basic_auth = {
@@ -22,9 +18,19 @@ else
             ["Accept"] = "application/json"
         },
         method = "PUT",
-        data = json.encode({
-            target_rate_kbps = config.target_rate_kbps,
-        }),
+        data = json.encode(tspec),
         log_func = config.debug and lua_log or nil,
     }
+end
+
+--- stop transfer
+update_transfer({ target_rate_kbps = 0 })
+
+--- validate session, returns nil if validation is OK, error message otherwise
+local message = forward_orchestrator(config)
+
+if message then
+    lua_session_abort(message)
+else
+    update_transfer({ target_rate_kbps = config.target_rate_kbps })
 end
