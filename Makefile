@@ -1,11 +1,11 @@
-DIR_TOP=
+DIR_TOP=./
 DIR_GEN=$(DIR_TOP)generated/
 DIR_PRIV=$(DIR_TOP)private/
 DIR_LUA_SRC=$(DIR_TOP)src/lua/
 DIR_TST=$(DIR_TOP)test/
 include $(DIR_GEN)config.make
 all:: $(DIR_GEN)config.make
-# had coded in HSTS
+# path to LUA libs, hard coded in HSTS
 HSTS_LUADIR=/usr/local/share/lua/5.1/
 # main script started by HSTS
 MAIN_SCRIPT=validate_orchestrator.lua
@@ -32,8 +32,8 @@ $(DIR_GEN)config_orchestrator.lua: $(DIR_GEN).exists
 	envsubst < $(DIR_LUA_SRC)config_orchestrator.tmpl.lua > $(DIR_GEN)config_orchestrator.lua
 testshares:
 	ascli shares repo down /london-demo-restricted/aspera-test-dir-small/10MB.18 --transfer-info=@json:'{"wss":false}'
-zip_lua:
-	zip -j -r lua.zip $(SRC_LUA_SCRIPTS)
+zip: $(SRC_LUA_SCRIPTS)
+	zip -j -r $(DIR_GEN)lua.zip $(SRC_LUA_SCRIPTS)
 # deploy on test environment
 deploy: $(SRC_LUA_SCRIPTS)
 	ssh $(hsts_addr) sudo bash -c "'mkdir -p $(HSTS_LUADIR);chmod a+w $(HSTS_LUADIR)'"
