@@ -1,10 +1,11 @@
 --- Forward session validation to orchestrator
---- load configuration
-local config = require "config_orchestrator"
 local json = require "json"
 local curlrest = require "curlrest"
+--- load configuration
+local config = require "config_orchestrator"
 --- load fwd application
 local forward_orchestrator = require "forward_orchestrator"
+--- Update parameters on current transfer session
 local function update_transfer(tspec)
     return curlrest.call {
         base_url = config.node.url,
