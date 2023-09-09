@@ -15,12 +15,12 @@ local function protect_shell_args(curl_args)
     return protected_args
 end
 
-local function char_to_percent(c)
+local function percent_encode_char(c)
     return string.format("%%%02X", string.byte(c))
 end
 
-function curlrest.percent_encode(value)
-    value = value:gsub("([^%w ])", char_to_percent)
+function curlrest.percent_encode_string(value)
+    value = value:gsub("([^%w ])", percent_encode_char)
     value = value:gsub(" ", "+")
     return value
 end
@@ -101,12 +101,14 @@ function curlrest.call(args)
 end
 
 function rest_dump(log_func, response)
-    log_func("Status Code:", response.status_code)
+    log_func("Status Code:" .. tostring(response.status_code))
     log_func("Headers:")
     for key, value in pairs(response.headers) do
-        log_func(key, ":", value)
+        log_func(key .. ":" .. value)
     end
-    log_func("Body:", response.body)
+    if response.body then
+        log_func("Body:" .. response.body)
+    end
 end
 
 return curlrest
