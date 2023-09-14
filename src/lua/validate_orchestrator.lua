@@ -32,6 +32,7 @@ local message = forward_orchestrator(config)
 
 if message then
     lua_session_abort(message)
+    os.execute("/usr/local/share/lua/5.1/cleanup_aborted.sh '" .. env_table["dest"] .. "'")
 else
     update_transfer({ target_rate_kbps = config.target_rate_kbps })
 end
